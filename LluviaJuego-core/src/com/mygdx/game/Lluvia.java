@@ -33,34 +33,59 @@ public class Lluvia implements Actualizable {
 
     private void crearObjetoCaido() {
         ObjetoCaida nuevoObjeto;
-        if (MathUtils.randomBoolean(0.1f)) { 
+        if (MathUtils.randomBoolean(0.1f)) { // 10% de probabilidad de crear una bomba
             nuevoObjeto = new Bomba(bomba);
-        } else {
+            ((Bomba) nuevoObjeto).setEstrategiaMovimiento(new MovimientoZigzag()); // Configura zigzag
+            System.out.println("Bomba creada en posición inicial: x=" + nuevoObjeto.getArea().x + ", y=" + nuevoObjeto.getArea().y);
+        } else { // Frutas
             int tipoFruta = MathUtils.random(0, frutas.size - 1);
             nuevoObjeto = new Fruta(frutas.get(tipoFruta));
+            System.out.println("Fruta creada en posición inicial: x=" + nuevoObjeto.getArea().x + ", y=" + nuevoObjeto.getArea().y);
         }
-        nuevoObjeto.getArea().setPosition(MathUtils.random(0, 800 - 64), 480);
+        nuevoObjeto.getArea().setPosition(MathUtils.random(0, 800 - 64), 480); // Posición inicial aleatoria en la parte superior
         objetosCaidos.add(nuevoObjeto);
         lastDropTime = TimeUtils.nanoTime();
     }
 
     @Override
     public void actualizarMovimiento(Tarro tarro) { 
-        if (TimeUtils.nanoTime() - lastDropTime > 100000000) crearObjetoCaido();
+        // Crear nuevos objetos si ha pasado el tiempo
+        if (TimeUtils.nanoTime() - lastDropTime > 100000000) {
+            crearObjetoCaido();
+        }
 
         for (int i = 0; i < objetosCaidos.size; i++) {
             ObjetoCaida objeto = objetosCaidos.get(i);
+
+            // Movimiento hacia abajo (caída)
             objeto.getArea().y -= 200 * Gdx.graphics.getDeltaTime();
 
+            // Movimiento zigzag en X solo para bombas
+            if (objeto instanceof Bomba) {
+                // Asegura que el zigzag afecta la posición del área visible
+                objeto.mover();
+                objeto.getArea().x = objeto.getX(); // Sincroniza posición x con zigzag
+            }
+
+            // Depuración: muestra la posición actual de cada objeto
+            System.out.println("Moviendo objeto: x=" + objeto.getArea().x + ", y=" + objeto.getArea().y);
+
+            // Eliminar objetos que salen de la pantalla
             if (objeto.getArea().y + 64 < 0) {
+                System.out.println("Objeto removido (fuera de pantalla): x=" + objeto.getArea().x + ", y=" + objeto.getArea().y);
                 objetosCaidos.removeIndex(i);
-            } else if (objeto.getArea().overlaps(tarro.getArea())) {
+                i--; // Ajustar índice tras eliminación
+            } 
+            // Detectar colisión con el tarro
+            else if (objeto.getArea().overlaps(tarro.getArea())) {
                 objeto.efecto(tarro);
                 if (objeto instanceof Fruta) dropSound.play();
                 objetosCaidos.removeIndex(i);
+                i--; // Ajustar índice tras eliminación
             }
         }
     }
+
 
 
     public void actualizarDibujoLluvia(SpriteBatch batch) {
@@ -72,5 +97,10 @@ public class Lluvia implements Actualizable {
     public void destruir() {
         dropSound.dispose();
         rainMusic.dispose();
+    }
+
+    // Método para exponer la lista de objetos caídos
+    public Array<ObjetoCaida> getObjetosCaida() {
+        return objetosCaidos;
     }
 }

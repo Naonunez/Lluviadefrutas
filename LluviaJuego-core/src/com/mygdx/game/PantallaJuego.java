@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -51,7 +52,12 @@ public class PantallaJuego implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
+    	
+    	if (Gdx.input.justTouched()) {
+            activarZigzagEnBombas(); // Forzar la activación del zigzag
+        }
+    	
+    	ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
@@ -95,5 +101,16 @@ public class PantallaJuego implements Screen {
         lluvia.destruir();
         batch.dispose();
         font.dispose();
+    }
+
+    // Cambiar estrategia de movimiento a zigzag para todas las bombas
+    public void activarZigzagEnBombas() {
+    	System.out.println("Intentando activar zigzag en bombas...");
+        for (ObjetoCaida objeto : lluvia.getObjetosCaida()) {
+            if (objeto instanceof Bomba) {
+                ((Bomba) objeto).setEstrategiaMovimiento(new MovimientoZigzag());
+                System.out.println("Zigzag activado para bomba en posición: x=" + objeto.getX() + ", y=" + objeto.getY());
+            }
+        }
     }
 }

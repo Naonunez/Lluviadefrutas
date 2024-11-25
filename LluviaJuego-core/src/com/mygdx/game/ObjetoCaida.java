@@ -7,6 +7,8 @@ public abstract class ObjetoCaida implements Actualizable {
     private Rectangle area;
     private Texture textura;
     protected float velocidad; // Velocidad de caída
+    private MovimientoStrategy estrategiaMovimiento;
+    private int x, y;
 
     public ObjetoCaida(Texture textura) {
         this.textura = textura;
@@ -14,6 +16,13 @@ public abstract class ObjetoCaida implements Actualizable {
         this.area.width = 64;
         this.area.height = 64;
         this.velocidad = 5; // Velocidad estándar
+        
+    }
+    
+    public ObjetoCaida(MovimientoStrategy estrategiaMovimiento, int xInicial, int yInicial) {
+        this.estrategiaMovimiento = estrategiaMovimiento;
+        this.x = xInicial;
+        this.y = yInicial;
     }
 
     public void actualizarMovimiento(Tarro tarro) {
@@ -23,7 +32,7 @@ public abstract class ObjetoCaida implements Actualizable {
         }
     }
 
-    protected void mover() {
+    protected void moverv() {
     	area.y -= velocidad; // Usa la velocidad para mover el objeto
         
     }
@@ -45,4 +54,33 @@ public abstract class ObjetoCaida implements Actualizable {
     public float getVelocidad() {
         return this.velocidad;
     }
+    
+    public void setEstrategiaMovimiento(MovimientoStrategy estrategiaMovimiento) {
+        this.estrategiaMovimiento = estrategiaMovimiento;
+    }
+
+    public void mover() {
+        if (estrategiaMovimiento != null) {
+            estrategiaMovimiento.mover(this);
+        }
+    }
+
+    public void setX(float x) {
+        area.x = x;
+    }
+
+    public void setY(float y) {
+        area.y = y;
+    }
+
+    public float getX() {
+        return area.x;
+    }
+
+    public float getY() {
+        return area.y;
+    }
+
+    
 }
+

@@ -46,5 +46,12 @@ public class LluviaJuego extends Game {
         musicaLluvia.dispose();
         super.dispose();
     }
-}
 
+    // Método para habilitar el zigzag en las bombas
+    public void activarMovimientoZigzagParaBombas() {
+        if (getScreen() instanceof PantallaJuego) { // Verifica que la pantalla actual sea de juego
+            PantallaJuego pantallaJuego = (PantallaJuego) getScreen();
+            pantallaJuego.activarZigzagEnBombas();
+        }
+    }
+}
