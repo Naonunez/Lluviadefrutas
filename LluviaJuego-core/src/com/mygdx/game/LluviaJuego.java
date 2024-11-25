@@ -17,10 +17,15 @@ public class LluviaJuego extends Game {
         sonidoGota = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
         musicaLluvia = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
 
+        // Configurar la música de fondo
+        musicaLluvia.setLooping(true);
+        musicaLluvia.play();
+
         // Inicia el juego con la pantalla de inicio
-        setScreen(new PantallaInicio(this)); 
+        setScreen(new PantallaInicio(this));
     }
 
+    // Métodos para acceder a los sonidos desde otras clases
     public Sound getSonidoHerido() {
         return sonidoHerido;
     }
@@ -35,9 +40,11 @@ public class LluviaJuego extends Game {
 
     @Override
     public void dispose() {
+        // Liberar recursos de audio
         sonidoHerido.dispose();
         sonidoGota.dispose();
         musicaLluvia.dispose();
         super.dispose();
     }
 }
+

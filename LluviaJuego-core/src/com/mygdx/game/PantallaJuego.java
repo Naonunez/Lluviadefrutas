@@ -54,21 +54,24 @@ public class PantallaJuego implements Screen {
         ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-        
+
         batch.begin();
-        font.draw(batch, "Gotas totales: " + tarro.getPuntos(), 5, 475);
+        font.draw(batch, "Puntaje frutal: " + tarro.getPuntos(), 5, 475);
         font.draw(batch, "Vidas : " + tarro.getVidas(), 720, 475);
-        
+
         if (!tarro.estaHerido()) {
-            tarro.actualizarMovimiento(tarro);        
-            lluvia.actualizarMovimiento(tarro);	   
+            tarro.actualizarMovimiento(tarro);
+            lluvia.actualizarMovimiento(tarro);
         }
-        
+
         tarro.dibujar(batch);
         lluvia.actualizarDibujoLluvia(batch);
-        batch.end();	
-        
+        batch.end();
+
+        // Al cambiar a la pantalla final, guarda el puntaje en el Singleton
         if (tarro.getVidas() <= 0) {
+            AdministradorPuntaje.obtenerInstancia().reiniciarPuntaje(); // Limpia puntajes previos
+            AdministradorPuntaje.obtenerInstancia().agregarPuntos(tarro.getPuntos()); // Guarda el puntaje actual
             juego.setScreen(new PantallaJuegoFinalizado(juego));
             dispose();
         }
