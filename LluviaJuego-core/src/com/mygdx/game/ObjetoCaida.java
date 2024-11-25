@@ -4,18 +4,32 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class ObjetoCaida implements Actualizable {
-	private Rectangle area;
-	private Texture textura;
+    private Rectangle area;
+    private Texture textura;
+    protected float velocidad; // Velocidad de caída
 
     public ObjetoCaida(Texture textura) {
         this.textura = textura;
-        area = new Rectangle();
-        area.width = 64;
-        area.height = 64;
+        this.area = new Rectangle();
+        this.area.width = 64;
+        this.area.height = 64;
+        this.velocidad = 5; // Velocidad estándar
     }
 
-    
-    
+    public void actualizarMovimiento(Tarro tarro) {
+        mover();
+        if (area.overlaps(tarro.getArea())) {
+            efecto(tarro);
+        }
+    }
+
+    protected void mover() {
+    	area.y -= velocidad; // Usa la velocidad para mover el objeto
+        
+    }
+
+    public abstract void efecto(Tarro tarro);
+
     public Rectangle getArea() {
         return area;
     }
@@ -24,14 +38,11 @@ public abstract class ObjetoCaida implements Actualizable {
         return textura;
     }
 
-    @Override
-    public void actualizarMovimiento(Tarro tarro) {
-        // Movimiento genérico para objetos que caen
-        area.y -= 5; // Reduce la posición en Y para simular caída
-        if (area.overlaps(tarro.getArea())) {
-            efecto(tarro);
-        }
+    public void setVelocidad(float nuevaVelocidad) {
+        this.velocidad = nuevaVelocidad;
     }
 
-    public abstract void efecto(Tarro tarro);
+    public float getVelocidad() {
+        return this.velocidad;
+    }
 }
